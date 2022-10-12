@@ -10,8 +10,9 @@ readme = "README.md"
 requires-python = ">=3.7"
 license = { text = "MIT" }
 
-[tool.setuptools]
-py-modules = ["certbot_dns_multi"]
+[tool.setuptools.packages.find]
+exclude = ["snap"]
+namespaces = false
 
 [tool.setuptools.dynamic]
 version = {attr = "certbot_dns_multi._version.__version__"}

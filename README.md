@@ -3,9 +3,6 @@
 DNS plugin for [Certbot](https://certbot.eff.org/) which integrates with the 100+ DNS providers from the [`lego` ACME client](https://github.com/go-acme/lego/).
 
 
-This plugin is built from the ground up and follows the development style and life-cycle
-of other `certbot-dns-*` plugins found in the
-
 ## Installation
 
 ### via `pip`

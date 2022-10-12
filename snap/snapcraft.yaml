@@ -1,6 +1,6 @@
 
 name: certbot-dns-multi
-summary: Certbot DNS plugin supporting multiple providers, using github.com/go-acme/lego
+summary: Certbot DNS plugin supporting multiple providers
 version: 'git'
 description: Certbot DNS plugin supporting multiple providers, using github.com/go-acme/lego
 website: https://github.com/alexzorin/certbot-dns-multi

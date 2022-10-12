@@ -26,10 +26,9 @@ type configure struct {
 }
 
 type perform struct {
-	Domain               string `json:"domain"`
-	ValidationDomainName string `json:"validation_domain_name"`
-	Token                string `json:"token"`
-	KeyAuthorization     string `json:"key_authorization"`
+	Domain           string `json:"domain"`
+	Token            string `json:"token"`
+	KeyAuthorization string `json:"key_authorization"`
 }
 
 type cleanup perform
@@ -122,8 +121,8 @@ func next(inputStr string) (any, error) {
 	}
 }
 
-func modifyRecords(domain, token, KeyAuthorization string, fn func(domain, token, KeyAuthorization string) error) error {
-	return fn(domain, token, KeyAuthorization)
+func modifyRecords(domain, token, keyAuthorization string, fn func(domain, token, keyAuthorization string) error) error {
+	return fn(domain, token, keyAuthorization)
 }
 
 func makeSuccess() *C.PyObject {

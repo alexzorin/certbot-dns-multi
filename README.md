@@ -2,6 +2,10 @@
 
 DNS plugin for [Certbot](https://certbot.eff.org/) which integrates with the 100+ DNS providers from the [`lego` ACME client](https://github.com/go-acme/lego/).
 
+At the last check, the supported providers are:
+
+> Akamai EdgeDNS, Alibaba Cloud DNS, all-inkl, Amazon Lightsail, Amazon Route 53, ArvanCloud, Aurora DNS, Autodns, Azure, Bindman, Bluecat, Checkdomain, Civo, CloudDNS, Cloudflare, ClouDNS, CloudXNS, ConoHa, Constellix, deSEC.io, Designate DNSaaS for Openstack, Digital Ocean, DNS Made Easy, DNSimple, DNSPod (deprecated), Domain Offensive (do.de), Domeneshop, DreamHost, Duck DNS, Dyn, Dynu, EasyDNS, Epik, Exoscale, External program, freemyip.com, G-Core Labs, Gandi, Gandi Live DNS (v5), Glesys, Go Daddy, Google Cloud, Hetzner, Hosting.de, Hosttech, HTTP request, Hurricane Electric DNS, HyperOne, IBM Cloud (SoftLayer), IIJ DNS Platform Service, Infoblox, Infomaniak, Internet Initiative Japan, Internet.bs, INWX, Ionos, iwantmyname, Joker, Joohoi's ACME-DNS, Linode (v4), Liquid Web, Loopia, LuaDNS, Manual, MyDNS.jp, MythicBeasts, Name.com, Namecheap, Namesilo, NearlyFreeSpeech.NET, Netcup, Netlify, Nicmanager, NIFCloud, Njalla, NS1, Open Telekom Cloud, Oracle Cloud, OVH, Porkbun, PowerDNS, Rackspace, reg.ru, RFC2136, RimuHosting, Sakura Cloud, Scaleway, Selectel, Servercow, Simply.com, Sonic, Stackpath, Tencent Cloud DNS, TransIP, UKFast SafeDNS, Variomedia, VegaDNS, Vercel, Versio.[nl|eu|uk], VinylDNS, VK Cloud, Vscale, Vultr, WEDOS, Yandex Cloud, Yandex PDD, Zone.ee, Zonomi.
+
 
 ## Installation
 
@@ -40,11 +44,14 @@ In this example, we'll use `cloudflare`.
 
     ```ini
     dns_multi_provider = cloudflare
-    CLOUDFLARE_EMAIL=you@example.com
-    CLOUDFLARE_API_KEY=b9841238feb177a84330febba8a83208921177bffe733
+    CLOUDFLARE_DNS_API_TOKEN=1234567890abcdefghijklmnopqrstuvwxyz
     ```
 
-4. Save the file.
+4. Save the file and secure it:
+
+    ```bash
+    chmod 0600 /etc/letsencrypt/dns-multi.ini
+    ```
 
 5. Try issue a certificate now:
 

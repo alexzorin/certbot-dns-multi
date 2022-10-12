@@ -41,9 +41,17 @@ class Authenticator(dns_common.DNSAuthenticator):
 
         lego_environ = {}
         for key in self.credentials.confobj:
+            if key.endswith("provider"):
+                continue
             lego_environ[key] = self.credentials.confobj.get(key)
 
-        LegoClient.configure(self.credentials.conf("provider"), lego_environ)
+        provider = self.credentials.conf("provider")
+        logger.debug(
+            "Configuring lego for provider %s with %d options",
+            provider,
+            len(lego_environ),
+        )
+        LegoClient.configure(provider, lego_environ)
 
     # The reasons we override perform rather than _perform are:
     # - Lego wants access to the challenge token, which is not exposed

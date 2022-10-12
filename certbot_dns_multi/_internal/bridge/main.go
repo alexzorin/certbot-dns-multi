@@ -66,13 +66,19 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 		selectedProvider = provider
 		return makeSuccess()
 	case *perform:
-		if err := modifyRecords(action.Domain, action.Token, action.KeyAuthorization,
+		if err := modifyRecords(
+			action.Domain,
+			action.Token,
+			action.KeyAuthorization,
 			selectedProvider.Present); err != nil {
 			return makeError(err)
 		}
 		return makeSuccess()
 	case *cleanup:
-		if err := modifyRecords(action.Domain, action.Token, action.KeyAuthorization,
+		if err := modifyRecords(
+			action.Domain,
+			action.Token,
+			action.KeyAuthorization,
 			selectedProvider.CleanUp); err != nil {
 			return makeError(err)
 		}

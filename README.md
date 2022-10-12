@@ -5,21 +5,24 @@ DNS plugin for [Certbot](https://certbot.eff.org/) which integrates with the 100
 
 ## Installation
 
-### via `pip`
-
-Because `lego` is written in Go, installing the plugin via `pip` requires you to have [Go 1.19 or newer](https://go.dev/dl) installed on the system. This project does not publish any binary wheels (yet). Sorry. For this reason, using the `snap` is recommended.
-
-```bash
-pip install certbot-dns-multi
-```
-
 ### via `snap`
+
+Using the `certbot` snap is the easiest way to use this plugin. See [here](https://certbot.eff.org/instructions?ws=other&os=snap) for instructions on installing Certbot via `snap`.
 
 ```bash
 sudo snap install certbot-dns-multi
 sudo snap set certbot trust-plugin-with-root=ok
 sudo snap connect certbot:plugin certbot-dns-multi
 ```
+
+### via `pip`
+
+Because `lego` is written in Go, compiling and installing the plugin via `pip` requires you to have [Go 1.19 or newer](https://go.dev/dl) installed on the system. This project does not publish any binary wheels (yet).  For this reason, using the `snap` is recommended.
+
+```bash
+pip install certbot-dns-multi
+```
+
 
 ## Usage
 

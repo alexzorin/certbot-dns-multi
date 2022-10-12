@@ -15,6 +15,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     description = "Obtain certificate using any of lego's supported DNS providers"
 
     _env_vars_to_unset: List[str] = []
+    _do_cleanup = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -39,11 +40,11 @@ class Authenticator(dns_common.DNSAuthenticator):
             {"provider": "Name of the DNS provider to use"},
         )
 
-        lego_environ = {}
-        for key in self.credentials.confobj:
-            if key.endswith("provider"):
-                continue
-            lego_environ[key] = self.credentials.confobj.get(key)
+        lego_environ = {
+            k: self.credentials.confobj.get(k)
+            for k in self.credentials.confobj
+            if k != "dns_multi_provider"
+        }
 
         provider = self.credentials.conf("provider")
         logger.debug(
@@ -61,6 +62,7 @@ class Authenticator(dns_common.DNSAuthenticator):
         self, achalls: List[achallenges.AnnotatedChallenge]
     ) -> List[challenges.ChallengeResponse]:
         self._setup_credentials()
+        self._do_cleanup = True
 
         responses = []
         for achall in achalls:
@@ -84,6 +86,9 @@ class Authenticator(dns_common.DNSAuthenticator):
         return responses
 
     def cleanup(self, achalls: List[achallenges.AnnotatedChallenge]) -> None:
+        if not self._do_cleanup:
+            return
+
         for achall in achalls:
             domain: str = achall.validation_domain_name(achall.domain)
             key_authz = achall.validation(achall.account_key)

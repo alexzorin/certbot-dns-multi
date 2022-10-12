@@ -33,13 +33,13 @@ In this example, we'll use `cloudflare`.
 2. Create `/etc/letsencrypt/dns-multi.ini` and enter the name of your provider, all lowercase, as below:
 
     ```ini
-    provider = cloudflare
+    dns_multi_provider = cloudflare
     ```
 
 3. Following the instructions on https://go-acme.github.io/lego/dns/cloudflare/, we add the required configuration items:
 
     ```ini
-    provider = cloudflare
+    dns_multi_provider = cloudflare
     CLOUDFLARE_EMAIL=you@example.com
     CLOUDFLARE_API_KEY=b9841238feb177a84330febba8a83208921177bffe733
     ```

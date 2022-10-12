@@ -12,7 +12,6 @@ adopt-info: certbot-dns-multi
 architectures:
   - build-on: amd64
   - build-on: arm64
-  - build-on: armhf
 parts:
   install-go:
     plugin: nil

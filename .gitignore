@@ -6,3 +6,4 @@ __pycache__
 /\.vscode
 /\.eggs
 /build
+/certbot_dns_multi/_version.py

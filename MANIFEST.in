@@ -1,2 +1,1 @@
-include certbot_dns_multi/_internal/bridge/go.sum
-include certbot_dns_multi/_internal/bridge/go.mod
+graft certbot_dns_multi/_internal/bridge

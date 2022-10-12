@@ -1,0 +1,53 @@
+
+name: certbot-dns-multi
+summary: Certbot DNS plugin supporting multiple providers, using github.com/go-acme/lego
+version: 'git'
+description: Certbot DNS plugin supporting multiple providers, using github.com/go-acme/lego
+website: https://github.com/alexzorin/certbot-dns-multi
+license: MIT
+confinement: strict
+grade: stable
+base: core20
+adopt-info: certbot-dns-multi
+architectures:
+  - build-on: amd64
+  - build-on: arm64
+  - build-on: armhf
+parts:
+  install-go:
+    plugin: nil
+    override-pull: |
+      apt-get update
+      apt-get -y install software-properties-common
+      add-apt-repository -y ppa:longsleep/golang-backports
+      apt-get update
+      apt-get -y install golang-go
+  certbot-dns-multi:
+    plugin: python
+    source: .
+    build-packages:
+      - gcc
+      - git
+      - build-essential
+      - libffi-dev
+      - python3-dev
+    after: [install-go]
+  certbot-metadata:
+    plugin: dump
+    source: .
+    stage: [setup.py, certbot-shared]
+    override-pull: |
+        snapcraftctl pull
+        mkdir -p $SNAPCRAFT_PART_SRC/certbot-shared
+slots:
+  certbot:
+    interface: content
+    content: certbot-1
+    read:
+      - $SNAP/lib/python3.8/site-packages
+
+plugs:
+  certbot-metadata:
+    interface: content
+    content: metadata-1
+    target: $SNAP/certbot-shared

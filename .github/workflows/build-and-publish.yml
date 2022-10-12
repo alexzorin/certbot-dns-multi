@@ -26,6 +26,11 @@ jobs:
       - name: Build
         run: |
           python -m build
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: certbot-dns-multi
+          path: dist/
       - name: Publish to PyPI
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: pypa/gh-action-pypi-publish@release/v1

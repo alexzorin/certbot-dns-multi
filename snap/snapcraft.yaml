@@ -25,6 +25,9 @@ parts:
   certbot-dns-multi:
     plugin: python
     source: .
+    override-pull: |
+        snapcraftctl pull
+        snapcraftctl set-version `git describe --tags`
     build-packages:
       - gcc
       - git

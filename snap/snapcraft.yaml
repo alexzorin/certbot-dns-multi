@@ -28,6 +28,8 @@ parts:
     override-pull: |
         snapcraftctl pull
         snapcraftctl set-version `git describe --tags`
+    build-environment:
+      - SNAP_BUILD: "True"
     build-packages:
       - gcc
       - git

@@ -1,4 +1,13 @@
+import os
 from setuptools import setup, Extension
+
+install_requires = []
+if not os.environ.get("SNAP_BUILD"):
+    install_requires.extend(
+        ["certbot>=1.12.0", "acme>=1.12.0", "josepy>=1.1.0"]
+    )
+else:
+    install_requires.append("packaging")
 
 setup(
     ext_modules=[
@@ -9,6 +18,7 @@ setup(
             ],
         )
     ],
+    install_requires=install_requires,
     setup_requires=["setuptools-golang"],
     build_golang={
         "root": (

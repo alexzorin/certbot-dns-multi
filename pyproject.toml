@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "setuptools-scm", "setuptools-golang"]
+requires = ["setuptools", "setuptools-scm>=7.0.5", "setuptools-golang"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -10,9 +10,8 @@ readme = "README.md"
 requires-python = ">=3.7"
 license = { text = "MIT" }
 
-[tool.setuptools.packages.find]
-exclude = ["snap"]
-namespaces = false
+[tool.setuptools]
+packages = ["certbot_dns_multi", "certbot_dns_multi._internal", "certbot_dns_multi._internal.bridge"]
 
 [tool.setuptools.dynamic]
 version = {attr = "certbot_dns_multi._version.__version__"}

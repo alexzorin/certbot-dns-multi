@@ -3,7 +3,7 @@ requires = ["setuptools", "setuptools-scm", "setuptools-golang"]
 build-backend = "setuptools.build_meta"
 
 [project]
-dynamic = ["version"]
+dynamic = ["version", "dependencies"]
 name = "certbot-dns-multi"
 description = "Certbot DNS plugin supporting multiple providers, using github.com/go-acme/lego"
 readme = "README.md"

@@ -10,12 +10,6 @@ jobs:
     name: Test
     runs-on: "ubuntu-latest"
     steps:
-      - name: Install snap
-        run: |
-          sudo apt-get update && \
-          sudo apt-get -y install snapd && \
-          sleep 5 && \
-          sudo snap install core
       - name: Install Certbot snap
         run: |
           sudo snap install --classic certbot
@@ -29,6 +23,7 @@ jobs:
           TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         run: |
           sudo -E sh -c 'umask 022; \
+            mkdir -p /etc/letsencrypt/;
             echo -e "dns_multi_provider=cloudflare\nCLOUDFLARE_DNS_API_TOKEN=$TOKEN" \
             > /etc/letsencrypt/dns-multi.ini; \
             chmod 0600 /etc/letsencrypt/dns-multi.ini'

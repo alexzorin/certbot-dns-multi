@@ -69,11 +69,8 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 			return makeError(errors.New("no provider selected, configure first"))
 		}
 
-		if err := modifyRecords(
-			action.Domain,
-			action.Token,
-			action.KeyAuthorization,
-			selectedProvider.Present); err != nil {
+		if err := selectedProvider.Present(
+			action.Domain, action.Token, action.KeyAuthorization); err != nil {
 			return makeError(err)
 		}
 		return makeSuccess()
@@ -81,11 +78,8 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 		if selectedProvider == nil {
 			return makeError(errors.New("no provider selected, configure first"))
 		}
-		if err := modifyRecords(
-			action.Domain,
-			action.Token,
-			action.KeyAuthorization,
-			selectedProvider.CleanUp); err != nil {
+		if err := selectedProvider.CleanUp(
+			action.Domain, action.Token, action.KeyAuthorization); err != nil {
 			return makeError(err)
 		}
 		return makeSuccess()
@@ -119,10 +113,6 @@ func next(inputStr string) (any, error) {
 	default:
 		return nil, fmt.Errorf("unknown action '%s'", v.Action)
 	}
-}
-
-func modifyRecords(domain, token, keyAuthorization string, fn func(domain, token, keyAuthorization string) error) error {
-	return fn(domain, token, keyAuthorization)
 }
 
 func makeSuccess() *C.PyObject {

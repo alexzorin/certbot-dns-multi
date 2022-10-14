@@ -1,5 +1,7 @@
 # certbot-dns-multi
 
+[![certbot-dns-multi](https://snapcraft.io/certbot-dns-multi/badge.svg)](https://snapcraft.io/certbot-dns-multi) ![build status](https://github.com/alexzorin/certbot-dns-multi/actions/workflows/build-and-publish.yml/badge.svg)  ![snap test status](https://github.com/alexzorin/certbot-dns-multi/actions/workflows/test-snap.yml/badge.svg)
+
 DNS plugin for [Certbot](https://certbot.eff.org/) which integrates with the 100+ DNS providers from the [`lego` ACME client](https://github.com/go-acme/lego/).
 
 At the last check, the supported providers are:

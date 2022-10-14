@@ -18,7 +18,7 @@ jobs:
           sudo snap install --edge certbot-dns-multi
           sudo snap set certbot trust-plugin-with-root=ok
           sudo snap connect certbot:plugin certbot-dns-multi
-      - name: Write the dns-multi credentials file
+      - name: Issue a staging certificate using certbot-dns-multi
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         run: |
@@ -27,8 +27,6 @@ jobs:
             echo -e "dns_multi_provider=cloudflare\nCLOUDFLARE_DNS_API_TOKEN=$TOKEN" \
             > /etc/letsencrypt/dns-multi.ini; \
             chmod 0600 /etc/letsencrypt/dns-multi.ini'
-      - name: Issue a staging certificate
-        run: |
           sudo certbot --staging register -n --no-eff-email \
             --agree-tos --register-unsafely-without-email
           sudo certbot certonly --staging \

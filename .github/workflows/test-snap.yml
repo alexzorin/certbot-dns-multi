@@ -29,7 +29,8 @@ jobs:
             chmod 0600 /etc/letsencrypt/dns-multi.ini'
       - name: Issue a staging certificate
         run: |
-          sudo certbot --staging register -n
+          sudo certbot --staging register -n --no-eff-email \
+            --agree-tos --register-unsafely-without-email
           sudo certbot certonly --staging \
             -d "*.zorin.au" -a dns-multi \
             --dns-multi-credentials=/etc/letsencrypt/dns-multi.ini

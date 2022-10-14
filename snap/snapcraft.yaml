@@ -9,8 +9,9 @@ grade: stable
 base: core20
 adopt-info: certbot-dns-multi
 architectures:
-  - build-on: amd64
-  - build-on: arm64
+  - amd64
+  - arm64
+  - armhf
 parts:
   install-go:
     plugin: nil
@@ -20,6 +21,14 @@ parts:
       add-apt-repository -y ppa:longsleep/golang-backports
       apt-get update
       apt-get -y install golang-go
+  install-rust:
+    plugin: nil
+    override-pull: |
+      if [ "$SNAP_ARCH" = "armhf" ]; then
+        apt-get update
+        apt-get -y install curl
+        curl https://sh.rustup.rs -sSf | sh -s -- -y
+      fi
   certbot-dns-multi:
     plugin: python
     source: .
@@ -34,7 +43,7 @@ parts:
       - build-essential
       - libffi-dev
       - python3-dev
-    after: [install-go]
+    after: [install-go, install-rust]
   certbot-metadata:
     plugin: dump
     source: .

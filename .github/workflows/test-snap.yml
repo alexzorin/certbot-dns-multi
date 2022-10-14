@@ -1,6 +1,7 @@
 name: Test the certbot-dns-multi snap
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '23 04 * * *' # At 04:23am every day
 

@@ -23,12 +23,13 @@ sudo snap connect certbot:plugin certbot-dns-multi
 
 ### via `pip`
 
-Because `lego` is written in Go, compiling and installing the plugin via `pip` requires you to have [Go 1.19 or newer](https://go.dev/dl) installed on the system. This project does not publish any binary wheels (yet).  For this reason, using the `snap` is recommended.
+Compiled wheels [are available](https://pypi.org/project/certbot-dns-multi/#files) for most `x86_64`/`amd64` Linux distributions. On other platforms, `pip` will try to compile the plugin, which requires [Go 1.19 or newer](https://go.dev/dl) to be installed on your server.
 
-```bash
-pip install certbot-dns-multi
-```
-
+| How did you install Certbot?                                                                          | How to install the plugin                             |
+|-------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| From `snap`                                                                                           | Don't use `pip`! Use the snap instructions above.     |
+| Using the [official Certbot `pip` instructions](https://certbot.eff.org/instructions?ws=other&os=pip) | `sudo /opt/certbot/bin/pip install certbot-dns-multi` |
+| From `apt`, `yum`, `dnf` or any other distro package manager                                          | `pip install certbot-dns-multi`                       |
 
 ## Usage
 

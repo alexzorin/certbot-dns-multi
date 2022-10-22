@@ -1,0 +1,25 @@
+name: Build manylinux wheels
+
+on:
+  workflow_call:
+    inputs:
+      go-version:
+        required: true
+        type: string
+        default: "1.19.2"
+      manylinux-image:
+        required: true
+        type: string
+        default: "manylinux_2_28_x86_64:amd64:linux/amd64"
+      python-versions:
+        required: true
+        type: string
+        default: "cp37-cp37m,cp39-cp39,cp310-cp310,cp311-cp311"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Foo
+        run: |
+          echo Hello World

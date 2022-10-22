@@ -11,6 +11,10 @@ jobs:
   build:
     name: Build
     runs-on: "ubuntu-latest"
+    strategy:
+      fail-fast: true
+      matrix:
+        arch: ["amd64"]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v3
@@ -25,16 +29,26 @@ jobs:
           python -m pip install --upgrade pip setuptools build wheel
       - name: Build
         run: |
-          python -m build
+          python -m build --sdist
+          python ./.github/build-manylinux.py --arch $arch
+        env:
+          arch: ${{ matrix.arch }}
       - name: Upload Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: certbot-dns-multi
           path: dist/
-      - name: Delete wheels before publishing
-        run: sh -c 'rm -f dist/*.whl'
+  publish:
+    name: Publish to PyPI
+    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: certbot-dns-multi
+          path: dist/
       - name: Publish to PyPI
-        if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}

@@ -40,7 +40,7 @@ def main() -> None:
     wheels_dir = project_dir.joinpath("dist")
     os.makedirs(wheels_dir, exist_ok=True)
 
-    image = MANYLINUX_IMAGES.get(args.arch.lower(), None)
+    image = MANYLINUX_IMAGES.get(args.arch, None)
     if not image:
         raise RuntimeError(f"Architecture {args.arch} is not supported")
 

@@ -26,8 +26,7 @@ jobs:
             mkdir -p /etc/letsencrypt/; \
             umask 022; \
             echo -e "dns_multi_provider = cloudflare\nCLOUDFLARE_DNS_API_TOKEN = $TOKEN" \
-            > /etc/letsencrypt/dns-multi.ini; \
-            chmod 0600 /etc/letsencrypt/dns-multi.ini'
+            > /etc/letsencrypt/dns-multi.ini'
           sudo certbot --staging register -n --no-eff-email \
             --agree-tos --register-unsafely-without-email
           sudo certbot certonly --staging \

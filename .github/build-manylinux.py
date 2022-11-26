@@ -13,7 +13,7 @@ MANYLINUX_IMAGES = {"arm64": "manylinux_2_28_aarch64", "amd64": "manylinux_2_28_
 def _run_process(args: List[str]) -> None:
     print(f"Running: {' '.join(args)}")
     proc = subprocess.Popen(args, stdout=stdout, stderr=stderr)
-    return_code = proc.wait(900)
+    return_code = proc.wait(1800)
     if return_code != 0:
         raise RuntimeError(f"Process failed, exit code {return_code}")
 

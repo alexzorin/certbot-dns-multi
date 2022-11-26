@@ -29,7 +29,7 @@ Compiled wheels [are available](https://pypi.org/project/certbot-dns-multi/#file
 |-------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
 | From `snap`                                                                                           | Don't use `pip`! Use the snap instructions above.     |
 | Using the [official Certbot `pip` instructions](https://certbot.eff.org/instructions?ws=other&os=pip) | `sudo /opt/certbot/bin/pip install certbot-dns-multi` |
-| From `apt`, `yum`, `dnf` or any other distro package manager. (Requires Certbot 1.19.0 or newer.)     | `pip install certbot-dns-multi`                       |
+| From `apt`, `yum`, `dnf` or any other distro package manager. (Requires Certbot 1.12.0 or newer.)     | `pip install certbot-dns-multi`                       |
 
 ## Usage
 

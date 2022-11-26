@@ -13,6 +13,21 @@ from lego_bridge import cmd
 logger = logging.getLogger(__name__)
 
 
+class backwards_compatible_authenticator(object):
+    """Provides support for both Certbot <1.19.0 and >=2.0.0."""
+    def __call__(self, obj):
+        try:
+            import zope.interface
+            from certbot.interfaces import IAuthenticator, IPluginFactory
+            zope.interface.implementer(IAuthenticator)(obj)
+            zope.interface.provider(IPluginFactory)(obj)
+        except ImportError:
+            pass
+        finally:
+            return obj
+
+
+@backwards_compatible_authenticator()
 class Authenticator(dns_common.DNSAuthenticator):
     description = "Obtain certificate using any of lego's supported DNS providers"
 

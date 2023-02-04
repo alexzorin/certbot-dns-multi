@@ -31,6 +31,19 @@ Compiled wheels [are available](https://pypi.org/project/certbot-dns-multi/#file
 | Using the [official Certbot `pip` instructions](https://certbot.eff.org/instructions?ws=other&os=pip) | `sudo /opt/certbot/bin/pip install certbot-dns-multi` |
 | From `apt`, `yum`, `dnf` or any other distro package manager. (Requires Certbot 1.12.0 or newer.)     | `pip install certbot-dns-multi`                       |
 
+### via `docker`
+
+Docker images for `linux/amd64` and `linux/arm64` are available from [`ghcr.io/alexzorin/certbot-dns-multi`](https://ghcr.io/alexzorin/certbot-dns-multi).
+
+e.g.
+
+```bash
+docker run --rm -it -v /etc/letsencrypt:/etc/letsencrypt \
+ghcr.io/alexzorin/certbot-dns-multi certonly \
+-a dns-multi --dns-multi-credentials /etc/letsencrypt/dns-multi.ini \
+-d "*.example.com" -d "example.com" --dry-run
+```
+
 ## Usage
 
 `certbot-dns-multi` is controlled via a credentials file.

@@ -59,7 +59,7 @@ In this example, we'll use `cloudflare`.
 
     ```ini
     dns_multi_provider = cloudflare
-    CLOUDFLARE_DNS_API_TOKEN=1234567890abcdefghijklmnopqrstuvwxyz
+    CLOUDFLARE_DNS_API_TOKEN="1234567890abcdefghijklmnopqrstuvwxyz"
     ```
 
 4. Save the file and secure it:

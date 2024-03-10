@@ -23,7 +23,7 @@ def main() -> None:
     parser.add_argument("--arch", required=True, type=str)
     parser.add_argument(
         "--go-version",
-        default="1.19.2",
+        default="1.22.1",
         type=str,
         help="Go compiler version (default: %(default)s)",
     )

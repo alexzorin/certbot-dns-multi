@@ -1,8 +1,10 @@
 module github.com/alexzorin/certbot-dns-multi/certbot_dns_multi/_internal/bridge
 
-go 1.19
+go 1.21
 
-require github.com/go-acme/lego/v4 v4.15.0
+toolchain go1.21.5
+
+require github.com/go-acme/lego/v4 v4.16.0
 
 require (
 	cloud.google.com/go/compute v1.20.1 // indirect
@@ -134,11 +136,11 @@ require (
 	github.com/yandex-cloud/go-sdk v0.0.0-20220805164847-cf028e604997 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.uber.org/ratelimit v0.2.0 // indirect
-	golang.org/x/crypto v0.18.0 // indirect
+	golang.org/x/crypto v0.19.0 // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.20.0 // indirect
 	golang.org/x/oauth2 v0.16.0 // indirect
-	golang.org/x/sys v0.16.0 // indirect
+	golang.org/x/sys v0.17.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	golang.org/x/tools v0.17.0 // indirect

@@ -1,6 +1,6 @@
 module github.com/alexzorin/certbot-dns-multi/certbot_dns_multi/_internal/bridge
 
-go 1.22.1
+go 1.22
 
 require github.com/go-acme/lego/v4 v4.16.0
 

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if [ ! -f "$SNAP/certbot-shared/certbot-version.txt" ]; then
+  echo "No certbot version available; not doing version comparison check" >> "$SNAP_DATA/debuglog"
+  exit 0
+fi
+cb_installed=$(cat $SNAP/certbot-shared/certbot-version.txt)
+cb_required="3.0"
+
+$SNAP/bin/python3 -c "import sys; from packaging import version; sys.exit(1) if version.parse('$cb_installed') < version.parse('$cb_required') else sys.exit(0)" || exit_code=1
+if [ "$exit_code" = "1" ]; then
+  echo "Certbot is version $cb_installed but needs to be at least $cb_required before this plugin can be updated; will try again on next refresh."
+  exit 1
+fi

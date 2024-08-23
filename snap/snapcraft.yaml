@@ -6,12 +6,14 @@ website: https://github.com/alexzorin/certbot-dns-multi
 license: MIT
 confinement: strict
 grade: stable
-base: core20
+base: core24
 adopt-info: certbot-dns-multi
-architectures:
-  - build-on: amd64
-  - build-on: arm64
-  - build-on: armhf
+platforms:
+  amd64:
+  arm64:
+    - build-on: [arm64]
+  armhf:
+    - build-on: [armhf]
 parts:
   install-go:
     plugin: nil
@@ -33,8 +35,8 @@ parts:
     plugin: python
     source: .
     override-pull: |
-        snapcraftctl pull
-        snapcraftctl set-version `git describe --tags`
+        craftctl default
+        craftctl set version=`git describe --tags`
     build-environment:
       - SNAP_BUILD: "True"
     build-packages:
@@ -49,14 +51,14 @@ parts:
     source: .
     stage: [setup.py, certbot-shared]
     override-pull: |
-        snapcraftctl pull
-        mkdir -p $SNAPCRAFT_PART_SRC/certbot-shared
+        craftctl default
+        mkdir -p $CRAFT_PART_SRC/certbot-shared
 slots:
   certbot:
     interface: content
     content: certbot-1
     read:
-      - $SNAP/lib/python3.8/site-packages
+      - $SNAP/lib/python3.12/site-packages
 
 plugs:
   certbot-metadata:

@@ -29,8 +29,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--python-versions",
-        default=["cp37-cp37m", "cp38-cp38", "cp39-cp39", "cp310-cp310",
-                 "cp311-cp311", "cp312-cp312"],
+        default=["cp38-cp38", "cp39-cp39", "cp310-cp310", "cp311-cp311", "cp312-cp312"],
         type=str,
         nargs="+",
         help="Which Python versions to generate wheels from (default %(default)s)",

@@ -28,8 +28,9 @@ jobs:
             echo -e "dns_multi_provider = cloudflare\nCLOUDFLARE_DNS_API_TOKEN = $TOKEN" \
             > /etc/letsencrypt/dns-multi.ini'
           sudo certbot --staging register -n --no-eff-email \
-            --agree-tos --register-unsafely-without-email
+            --agree-tos --email certbot-dns-multi-nightly@zorin.au
           sudo certbot certonly --staging \
             -d "*.zorin.au" -a dns-multi \
             --dns-multi-credentials=/etc/letsencrypt/dns-multi.ini
-          sudo certbot --staging unregister -n
+          sudo certbot show_account -vvv
+          sudo certbot --staging unregister -n -vvv

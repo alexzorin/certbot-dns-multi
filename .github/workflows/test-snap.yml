@@ -32,5 +32,5 @@ jobs:
           sudo certbot certonly --staging \
             -d "*.zorin.au" -a dns-multi \
             --dns-multi-credentials=/etc/letsencrypt/dns-multi.ini
-          sudo certbot show_account -vvv
+          sudo certbot --staging show_account -vvv
           sudo certbot --staging unregister -n -vvv

@@ -42,6 +42,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     ) -> None:
         super().add_parser_arguments(add, default_propagation_seconds)
         add("credentials", help="MultiDNS credentials INI file.")
+        add("nameservers", help="Recursive nameservers to use for DNS queries.")
 
     def more_info(self) -> str:
         return (
@@ -49,7 +50,13 @@ class Authenticator(dns_common.DNSAuthenticator):
             "available via lego"
         )
 
-    def _setup_credentials(self) -> None:
+    def _setup_lego_client(self) -> None:
+        try:
+            nameservers = self.conf("nameservers").split(",")
+            logger.debug("Configuring lego with nameservers %s", nameservers)
+        except:
+            nameservers = None
+
         self.credentials = self._configure_credentials(
             "credentials",
             "MultiDNS credentials INI file",
@@ -68,7 +75,8 @@ class Authenticator(dns_common.DNSAuthenticator):
             provider,
             len(lego_environ),
         )
-        LegoClient.configure(provider, lego_environ)
+
+        LegoClient.configure(provider, lego_environ, nameservers)
 
     # We are overriding perform and cleanup rather than
     # _perform and _cleanup, owing due to the fact that lego wants access
@@ -77,7 +85,7 @@ class Authenticator(dns_common.DNSAuthenticator):
         self, achalls: List[achallenges.AnnotatedChallenge]
     ) -> List[challenges.ChallengeResponse]:
         self._do_cleanup = False
-        self._setup_credentials()
+        self._setup_lego_client()
         self._do_cleanup = True
 
         responses = []

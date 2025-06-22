@@ -1,7 +1,7 @@
 import json
 import logging
 from time import sleep
-from typing import Any, Callable, List, Mapping
+from typing import Any, Callable, List, Mapping, Optional
 
 from acme import challenges
 from certbot import achallenges, errors
@@ -143,7 +143,7 @@ class Authenticator(dns_common.DNSAuthenticator):
 
 class LegoClient:
     @staticmethod
-    def configure(provider: str, credentials: Mapping[str, str]):
+    def configure(provider: str, credentials: Mapping[str, str], nameservers: Optional[List[str]] = None):
         LegoClient._raise_for_response(
             cmd(
                 json.dumps(
@@ -151,6 +151,7 @@ class LegoClient:
                         "action": "configure",
                         "provider": provider,
                         "credentials": credentials,
+                        "nameservers": nameservers,
                     }
                 )
             )

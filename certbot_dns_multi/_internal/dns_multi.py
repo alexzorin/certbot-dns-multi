@@ -42,7 +42,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     ) -> None:
         super().add_parser_arguments(add, default_propagation_seconds)
         add("credentials", help="MultiDNS credentials INI file.")
-        add("nameservers", help="Recursive nameservers to use for DNS queries (--dns.resolvers equivalent).")
+        add("nameservers", help="Recursive nameservers to use for DNS queries.")
 
     def more_info(self) -> str:
         return (

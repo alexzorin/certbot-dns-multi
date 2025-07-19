@@ -7,7 +7,7 @@ dynamic = ["version", "dependencies"]
 name = "certbot-dns-multi"
 description = "Certbot DNS plugin supporting multiple providers, using github.com/go-acme/lego"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.9"
 license = { text = "MIT" }
 
 [tool.setuptools]

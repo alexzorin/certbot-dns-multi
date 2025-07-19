@@ -23,13 +23,13 @@ def main() -> None:
     parser.add_argument("--arch", required=True, type=str)
     parser.add_argument(
         "--go-version",
-        default="1.22.1",
+        default="1.24.5",
         type=str,
         help="Go compiler version (default: %(default)s)",
     )
     parser.add_argument(
         "--python-versions",
-        default=["cp38-cp38", "cp39-cp39", "cp310-cp310", "cp311-cp311", "cp312-cp312"],
+        default=["cp39-cp39", "cp310-cp310", "cp311-cp311", "cp312-cp312"],
         type=str,
         nargs="+",
         help="Which Python versions to generate wheels from (default %(default)s)",

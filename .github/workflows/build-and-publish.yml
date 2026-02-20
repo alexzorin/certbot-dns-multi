@@ -7,48 +7,75 @@ on:
     tags:
       - "*"
 
+concurrency:
+  group: build-release-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build:
-    name: Build
+  sdist:
+    name: Build sdist
     runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install Python tools
+        run: |
+          python -m pip install --upgrade pip build
+      - name: Build sdist
+        run: |
+          python -m build --sdist
+      - name: Upload sdist
+        uses: actions/upload-artifact@v6
+        with:
+          name: certbot-dns-multi-sdist
+          path: dist/*.tar.gz
+          if-no-files-found: error
+          compression-level: 0
+  wheels:
+    name: Build wheel (${{ matrix.arch }}, ${{ matrix.python_tag }})
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
       matrix:
         arch: ["amd64"]
+        python_tag: ["cp311-cp311", "cp312-cp312", "cp313-cp313", "cp314-cp314"]
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
         with:
-          go-version: "1.26"
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.14"
-      - name: Install Python tools
+          fetch-depth: 0
+      - name: Build wheel
         run: |
-          python -m pip install --upgrade pip setuptools build wheel
-      - name: Build
-        run: |
-          python -m build --sdist
-          python ./.github/build-manylinux.py --arch $arch
-        env:
-          arch: ${{ matrix.arch }}
-      - name: Upload Artifacts
+          python3 ./.github/build-manylinux.py --arch "${{ matrix.arch }}" --python-versions "${{ matrix.python_tag }}"
+      - name: Upload wheel
         uses: actions/upload-artifact@v6
         with:
-          name: certbot-dns-multi
-          path: dist/
+          name: certbot-dns-multi-wheel-${{ matrix.arch }}-${{ matrix.python_tag }}
+          path: dist/*.whl
+          if-no-files-found: error
+          compression-level: 0
   publish:
     name: Publish to PyPI
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-    needs: build
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+    needs: [sdist, wheels]
     runs-on: ubuntu-latest
     permissions:
       id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v6
         with:
-          name: certbot-dns-multi
+          pattern: certbot-dns-multi-*
+          merge-multiple: true
           path: dist/
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1

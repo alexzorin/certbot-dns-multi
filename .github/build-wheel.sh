@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail;
 
+git config --global --add safe.directory /app;
+
 curl -L https://go.dev/dl/go$GO_VER.linux-$GOARCH.tar.gz | tar -zx -C /usr/local/;
 export PATH=$PATH:/usr/local/go/bin;
 export TMP_WHEEL_DIR=/tmp/wheels

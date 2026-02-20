@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-go@v6
         with:
           go-version: "1.26"
+          cache: false
       - name: Set up Python 3.14
         uses: actions/setup-python@v6
         with:

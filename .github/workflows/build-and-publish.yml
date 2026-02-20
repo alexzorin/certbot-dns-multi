@@ -44,11 +44,11 @@ jobs:
           compression-level: 0
   wheels:
     name: Build wheel (${{ matrix.arch }}, ${{ matrix.python_tag }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
       matrix:
-        arch: ["amd64"]
+        arch: ["amd64", "arm64"]
         python_tag: ["cp311-cp311", "cp312-cp312", "cp313-cp313", "cp314-cp314"]
     steps:
       - uses: actions/checkout@v6

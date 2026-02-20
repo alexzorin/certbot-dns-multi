@@ -1,13 +1,19 @@
-FROM golang:1-bullseye
+# syntax=docker/dockerfile:1.7
+FROM python:3.13-slim-trixie
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN python -m venv /opt/certbot
+ENV PATH="/opt/certbot/bin:${PATH}"
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    pip install --upgrade pip setuptools wheel && \
+    pip install certbot && \
+    pip install --only-binary=:all: certbot-dns-multi
+
+WORKDIR /etc/letsencrypt
+VOLUME ["/etc/letsencrypt", "/var/lib/letsencrypt", "/var/log/letsencrypt"]
 
 ENTRYPOINT ["certbot"]
-
-VOLUME /etc/letsencrypt /var/lib/letsencrypt
-WORKDIR /opt/certbot
-
-RUN apt update && apt -y install python3 python3-venv python3-dev && \
-    python3 -m venv /opt/certbot/ && \
-    /opt/certbot/bin/pip install --upgrade pip && \
-    /opt/certbot/bin/pip install certbot certbot-dns-multi && \
-    ln -s /opt/certbot/bin/certbot /usr/bin/certbot && \
-    rm -rf /var/lib/apt/lists/*

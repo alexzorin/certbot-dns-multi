@@ -50,12 +50,11 @@ class Authenticator(dns_common.DNSAuthenticator):
             "available via lego"
         )
 
-    def _setup_lego_client(self) -> None:
-        try:
-            nameservers = self.conf("nameservers").split(",")
+    def _setup_credentials(self) -> None:
+        nameservers_str = self.conf("nameservers")
+        nameservers = nameservers_str.split(",") if nameservers_str else None
+        if nameservers:
             logger.debug("Configuring lego with nameservers %s", nameservers)
-        except:
-            nameservers = None
 
         self.credentials = self._configure_credentials(
             "credentials",
@@ -85,7 +84,7 @@ class Authenticator(dns_common.DNSAuthenticator):
         self, achalls: List[achallenges.AnnotatedChallenge]
     ) -> List[challenges.ChallengeResponse]:
         self._do_cleanup = False
-        self._setup_lego_client()
+        self._setup_credentials()
         self._do_cleanup = True
 
         responses = []

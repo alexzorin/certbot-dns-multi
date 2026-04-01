@@ -13,6 +13,7 @@ import (
 	"unsafe"
 
 	"github.com/go-acme/lego/v4/challenge"
+	"github.com/go-acme/lego/v4/challenge/dns01"
 	"github.com/go-acme/lego/v4/providers/dns"
 )
 
@@ -23,6 +24,7 @@ var (
 type configure struct {
 	Provider    string            `json:"provider"`
 	Credentials map[string]string `json:"credentials"`
+	Nameservers []string          `json:"nameservers,omitempty"`
 }
 
 type perform struct {
@@ -57,6 +59,12 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 	case *configure:
 		for key, value := range action.Credentials {
 			os.Setenv(key, value)
+		}
+		if len(action.Nameservers) > 0 {
+			addNameserver := dns01.AddRecursiveNameservers(action.Nameservers)
+			if err := addNameserver(nil); err != nil {
+				return makeError(fmt.Errorf("failed to set nameservers: %w", err))
+			}
 		}
 		provider, err := dns.NewDNSChallengeProviderByName(action.Provider)
 		if err != nil {

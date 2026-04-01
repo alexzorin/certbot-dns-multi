@@ -1,7 +1,7 @@
 import json
 import logging
 from time import sleep
-from typing import Any, Callable, List, Mapping
+from typing import Any, Callable, List, Mapping, Optional
 
 from acme import challenges
 from certbot import achallenges, errors
@@ -42,6 +42,7 @@ class Authenticator(dns_common.DNSAuthenticator):
     ) -> None:
         super().add_parser_arguments(add, default_propagation_seconds)
         add("credentials", help="MultiDNS credentials INI file.")
+        add("nameservers", help="Recursive nameservers to use for DNS queries.")
 
     def more_info(self) -> str:
         return (
@@ -50,6 +51,11 @@ class Authenticator(dns_common.DNSAuthenticator):
         )
 
     def _setup_credentials(self) -> None:
+        nameservers_str = self.conf("nameservers")
+        nameservers = nameservers_str.split(",") if nameservers_str else None
+        if nameservers:
+            logger.debug("Configuring lego with nameservers %s", nameservers)
+
         self.credentials = self._configure_credentials(
             "credentials",
             "MultiDNS credentials INI file",
@@ -68,7 +74,8 @@ class Authenticator(dns_common.DNSAuthenticator):
             provider,
             len(lego_environ),
         )
-        LegoClient.configure(provider, lego_environ)
+
+        LegoClient.configure(provider, lego_environ, nameservers)
 
     # We are overriding perform and cleanup rather than
     # _perform and _cleanup, owing due to the fact that lego wants access
@@ -143,7 +150,7 @@ class Authenticator(dns_common.DNSAuthenticator):
 
 class LegoClient:
     @staticmethod
-    def configure(provider: str, credentials: Mapping[str, str]):
+    def configure(provider: str, credentials: Mapping[str, str], nameservers: Optional[List[str]] = None):
         LegoClient._raise_for_response(
             cmd(
                 json.dumps(
@@ -151,6 +158,7 @@ class LegoClient:
                         "action": "configure",
                         "provider": provider,
                         "credentials": credentials,
+                        "nameservers": nameservers,
                     }
                 )
             )

@@ -1,0 +1,74 @@
+name: Bump lego and release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag (e.g. 4.14.0). Leave empty to auto-increment patch from latest tag."
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  bump-and-release:
+    name: Bump lego, build check, and release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.26"
+          cache: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Update lego
+        id: update
+        working-directory: certbot_dns_multi/_internal/bridge
+        run: |
+          go get github.com/go-acme/lego/v4@latest
+          go mod tidy
+          LEGO_VERSION=$(go list -m github.com/go-acme/lego/v4 | awk '{print $2}')
+          echo "lego_version=$LEGO_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Determine release tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            LATEST=$(git tag --sort=-v:refname | head -1)
+            MAJOR=$(echo "$LATEST" | cut -d. -f1)
+            MINOR=$(echo "$LATEST" | cut -d. -f2)
+            PATCH=$(echo "$LATEST" | cut -d. -f3)
+            echo "tag=$MAJOR.$MINOR.$((PATCH + 1))" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build check
+        working-directory: certbot_dns_multi/_internal/bridge
+        run: |
+          CGO_CFLAGS="$(python3-config --cflags)" \
+          CGO_LDFLAGS="$(python3-config --embed --ldflags)" \
+          go build ./...
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add certbot_dns_multi/_internal/bridge/go.mod certbot_dns_multi/_internal/bridge/go.sum
+          git commit -m "Bump lego to ${{ steps.update.outputs.lego_version }}"
+          git tag "${{ steps.tag.outputs.tag }}"
+
+      - name: Push
+        run: |
+          git push
+          git push --tags

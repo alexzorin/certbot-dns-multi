@@ -46,11 +46,8 @@ jobs:
           if [ -n "${{ inputs.tag }}" ]; then
             echo "tag=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           else
-            LATEST=$(git tag --sort=-v:refname | head -1)
-            MAJOR=$(echo "$LATEST" | cut -d. -f1)
-            MINOR=$(echo "$LATEST" | cut -d. -f2)
-            PATCH=$(echo "$LATEST" | cut -d. -f3)
-            echo "tag=$MAJOR.$MINOR.$((PATCH + 1))" >> "$GITHUB_OUTPUT"
+            LEGO_VERSION="${{ steps.update.outputs.lego_version }}"
+            echo "tag=${LEGO_VERSION#v}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build check

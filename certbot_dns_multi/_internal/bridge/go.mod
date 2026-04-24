@@ -2,7 +2,7 @@ module github.com/alexzorin/certbot-dns-multi/certbot_dns_multi/_internal/bridge
 
 go 1.25.0
 
-require github.com/go-acme/lego/v4 v4.35.1
+require github.com/go-acme/lego/v4 v4.35.2
 
 require (
 	cloud.google.com/go/auth v0.20.0 // indirect
@@ -142,7 +142,7 @@ require (
 	github.com/nrdcg/namesilo v0.5.0 // indirect
 	github.com/nrdcg/nodion v0.1.0 // indirect
 	github.com/nrdcg/oci-go-sdk/common/v1065 v1065.113.0 // indirect
-	github.com/nrdcg/oci-go-sdk/dns/v1065 v1065.112.0 // indirect
+	github.com/nrdcg/oci-go-sdk/dns/v1065 v1065.113.0 // indirect
 	github.com/nrdcg/porkbun v0.4.0 // indirect
 	github.com/nrdcg/vegadns v0.3.0 // indirect
 	github.com/nzdjb/go-metaname v1.0.0 // indirect

@@ -4,6 +4,9 @@ venv/
 __pycache__
 *.so
 /\.vscode
+/.zed
+/.clangd
 /\.eggs
 /build
 /certbot_dns_multi/_version.py
+instructions.txt

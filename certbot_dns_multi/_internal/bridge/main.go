@@ -6,15 +6,16 @@ package main
 import "C"
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"unsafe"
 
-	"github.com/go-acme/lego/v4/challenge"
-	"github.com/go-acme/lego/v4/challenge/dns01"
-	"github.com/go-acme/lego/v4/providers/dns"
+	"github.com/go-acme/lego/v5/challenge"
+	"github.com/go-acme/lego/v5/challenge/dns01"
+	"github.com/go-acme/lego/v5/providers/dns"
 )
 
 var (
@@ -61,10 +62,9 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 			os.Setenv(key, value)
 		}
 		if len(action.Nameservers) > 0 {
-			addNameserver := dns01.AddRecursiveNameservers(action.Nameservers)
-			if err := addNameserver(nil); err != nil {
-				return makeError(fmt.Errorf("failed to set nameservers: %w", err))
-			}
+			dns01.SetDefaultClient(dns01.NewClient(&dns01.Options{
+				RecursiveNameservers: action.Nameservers,
+			}))
 		}
 		provider, err := dns.NewDNSChallengeProviderByName(action.Provider)
 		if err != nil {
@@ -78,7 +78,7 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 		}
 
 		if err := selectedProvider.Present(
-			action.Domain, action.Token, action.KeyAuthorization); err != nil {
+			context.Background(), action.Domain, action.Token, action.KeyAuthorization); err != nil {
 			return makeError(err)
 		}
 		return makeSuccess()
@@ -87,7 +87,7 @@ func lego_bridge_cmd(self *C.PyObject, args *C.PyObject) *C.PyObject {
 			return makeError(errors.New("no provider selected, configure first"))
 		}
 		if err := selectedProvider.CleanUp(
-			action.Domain, action.Token, action.KeyAuthorization); err != nil {
+			context.Background(), action.Domain, action.Token, action.KeyAuthorization); err != nil {
 			return makeError(err)
 		}
 		return makeSuccess()

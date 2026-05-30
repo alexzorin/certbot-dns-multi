@@ -36,9 +36,9 @@ jobs:
         id: update
         working-directory: certbot_dns_multi/_internal/bridge
         run: |
-          go get github.com/go-acme/lego/v4@latest
+          go get github.com/go-acme/lego/v5@latest
           go mod tidy
-          LEGO_VERSION=$(go list -m github.com/go-acme/lego/v4 | awk '{print $2}')
+          LEGO_VERSION=$(go list -m github.com/go-acme/lego/v5 | awk '{print $2}')
           echo "lego_version=$LEGO_VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Determine release tag

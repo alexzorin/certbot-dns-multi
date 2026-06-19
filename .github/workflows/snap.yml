@@ -1,0 +1,125 @@
+name: Build and publish snaps
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Tag, branch, or SHA to build. Leave empty to use the selected ref."
+        required: false
+        type: string
+      dry_run:
+        description: "Build snaps but do not publish them"
+        required: true
+        type: boolean
+        default: true
+      channels:
+        description: "Snap Store channels to release to"
+        required: true
+        type: string
+        default: latest/edge,latest/stable
+  workflow_call:
+    inputs:
+      ref:
+        required: false
+        type: string
+        default: ""
+      dry_run:
+        required: false
+        type: boolean
+        default: false
+      channels:
+        required: false
+        type: string
+        default: latest/edge,latest/stable
+    secrets:
+      SNAPCRAFT_STORE_CREDENTIALS:
+        required: false
+
+concurrency:
+  group: snaps-${{ inputs.ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  BUILD_REF: ${{ inputs.ref || github.ref }}
+  DRY_RUN: ${{ inputs.dry_run }}
+  SNAP_CHANNELS: ${{ inputs.channels }}
+
+jobs:
+  build:
+    name: Build snap (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: ${{ env.BUILD_REF }}
+      - name: Refuse untagged publish
+        if: inputs.dry_run != true
+        run: |
+          git describe --exact-match --tags HEAD
+      - name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+      - name: Build snap
+        run: |
+          sudo snapcraft pack --destructive-mode --build-for="${{ matrix.arch }}"
+      - name: Upload snap artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: certbot-dns-multi-snap-${{ matrix.arch }}
+          path: "*.snap"
+          if-no-files-found: error
+          compression-level: 0
+
+  publish:
+    name: Publish snaps
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: certbot-dns-multi-snap-*
+          merge-multiple: true
+          path: snap-dist/
+      - name: Skip Snap Store publish
+        if: inputs.dry_run == true
+        run: |
+          echo "Dry run: built snap artifacts but did not publish to Snap Store."
+          ls -la snap-dist/
+      - name: Install Snapcraft
+        if: inputs.dry_run != true
+        run: |
+          sudo snap install snapcraft --classic
+      - name: Publish snaps
+        if: inputs.dry_run != true
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        shell: bash
+        run: |
+          if [ -z "$SNAPCRAFT_STORE_CREDENTIALS" ]; then
+            echo "::error::SNAPCRAFT_STORE_CREDENTIALS is required to publish snaps."
+            exit 1
+          fi
+
+          shopt -s nullglob
+          snaps=(snap-dist/*.snap)
+
+          if [ "${#snaps[@]}" -eq 0 ]; then
+            echo "::error::No snap artifacts found."
+            exit 1
+          fi
+
+          for snap in "${snaps[@]}"; do
+            snapcraft upload "$snap" --release="$SNAP_CHANNELS"
+          done

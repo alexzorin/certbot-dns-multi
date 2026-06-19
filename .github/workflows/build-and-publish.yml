@@ -6,14 +6,35 @@ on:
       - main
     tags:
       - "*"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build everything but do not publish"
+        required: true
+        type: boolean
+        default: true
 
 concurrency:
   group: build-release-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+
 jobs:
+  validate-release-mode:
+    name: Validate release mode
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse non-tag publish
+        if: ${{ github.event_name == 'workflow_dispatch' && env.DRY_RUN != 'true' && !startsWith(github.ref, 'refs/tags/') }}
+        run: |
+          echo "::error::dry_run=false is only allowed on tag refs."
+          exit 1
+
   sdist:
     name: Build sdist
+    needs: validate-release-mode
     runs-on: "ubuntu-latest"
     steps:
       - uses: actions/checkout@v6
@@ -45,6 +66,7 @@ jobs:
           compression-level: 0
   wheels:
     name: Build wheel (${{ matrix.arch }}, ${{ matrix.python_tag }})
+    needs: validate-release-mode
     runs-on: ${{ matrix.arch == 'arm64' && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
     strategy:
       fail-fast: true
@@ -65,9 +87,9 @@ jobs:
           path: dist/*.whl
           if-no-files-found: error
           compression-level: 0
-  publish:
-    name: Publish to PyPI
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+  python-release:
+    name: Publish Python package
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
     needs: [sdist, wheels]
     runs-on: ubuntu-latest
     permissions:
@@ -78,5 +100,91 @@ jobs:
           pattern: certbot-dns-multi-*
           merge-multiple: true
           path: dist/
+      - name: Skip PyPI publish
+        if: env.DRY_RUN == 'true'
+        run: |
+          echo "Dry run: built Python artifacts but did not publish to PyPI."
       - name: Publish to PyPI
+        if: env.DRY_RUN != 'true' && startsWith(github.ref, 'refs/tags/')
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  docker:
+    name: Build Docker container
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: python-release
+    uses: ./.github/workflows/docker.yml
+    permissions:
+      contents: read
+      packages: write
+    secrets: inherit
+    with:
+      dry_run: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
+
+  snaps:
+    name: Build snap (${{ matrix.arch }})
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: docker
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+          - arch: arm64
+            runner: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Install Snapcraft
+        run: |
+          sudo snap install snapcraft --classic
+      - name: Build snap
+        run: |
+          snapcraft --destructive-mode --build-for="${{ matrix.arch }}"
+      - name: Upload snap artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: certbot-dns-multi-snap-${{ matrix.arch }}
+          path: "*.snap"
+          if-no-files-found: error
+          compression-level: 0
+
+  snap-release:
+    name: Publish snaps
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/')
+    needs: snaps
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v6
+        with:
+          pattern: certbot-dns-multi-snap-*
+          merge-multiple: true
+          path: snap-dist/
+      - name: Skip Snap Store publish
+        if: env.DRY_RUN == 'true'
+        run: |
+          echo "Dry run: built snap artifacts but did not publish to Snap Store."
+          ls -la snap-dist/
+      - name: Install Snapcraft
+        if: env.DRY_RUN != 'true' && startsWith(github.ref, 'refs/tags/')
+        run: |
+          sudo snap install snapcraft --classic
+      - name: Publish snaps to edge and stable
+        if: env.DRY_RUN != 'true' && startsWith(github.ref, 'refs/tags/')
+        env:
+          SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
+        shell: bash
+        run: |
+          shopt -s nullglob
+          snaps=(snap-dist/*.snap)
+
+          if [ "${#snaps[@]}" -eq 0 ]; then
+            echo "::error::No snap artifacts found."
+            exit 1
+          fi
+
+          for snap in "${snaps[@]}"; do
+            snapcraft upload "$snap" --release=latest/edge,latest/stable
+          done

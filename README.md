@@ -20,6 +20,8 @@ sudo snap set certbot trust-plugin-with-root=ok
 sudo snap connect certbot:plugin certbot-dns-multi
 ```
 
+We previously published `armhf` snaps, but new snap releases are now published only for `amd64` and `arm64`.
+
 ### via `pip`
 
 Compiled wheels [are available](https://pypi.org/project/certbot-dns-multi/#files) for most `x86_64`/`amd64` Linux distributions for Python 3.11+. On other platforms, `pip` will try to compile the plugin, which requires [Go 1.24 or newer](https://go.dev/dl) to be installed on your server.

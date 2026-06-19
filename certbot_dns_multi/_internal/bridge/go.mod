@@ -2,7 +2,7 @@ module github.com/alexzorin/certbot-dns-multi/certbot_dns_multi/_internal/bridge
 
 go 1.25.0
 
-require github.com/go-acme/lego/v5 v5.2.0
+require github.com/go-acme/lego/v5 v5.2.2
 
 require (
 	cloud.google.com/go/auth v0.20.0 // indirect

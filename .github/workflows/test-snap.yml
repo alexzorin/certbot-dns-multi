@@ -22,9 +22,9 @@ jobs:
         env:
           TOKEN: ${{ secrets.CLOUDFLARE_TOKEN }}
         run: |
-          sudo -E /usr/bin/env bash -c '\
+          sudo --preserve-env=TOKEN /usr/bin/env bash -c '\
             mkdir -p /etc/letsencrypt/; \
-            umask 022; \
+            umask 077; \
             echo -e "dns_multi_provider = cloudflare\nCLOUDFLARE_DNS_API_TOKEN = $TOKEN" \
             > /etc/letsencrypt/dns-multi.ini'
           sudo certbot --staging register -n --no-eff-email \
